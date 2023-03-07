@@ -8,7 +8,7 @@ This library provides a Keychain service implementation that allows storing and 
 ```swift 
 open func setString(_ value: String, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool
 ```
-This method allows you to store a string value for a given key in the Keychain. The accessibility parameter specifies the level of security required to access the data. The method returns true if the operation succeeds, or false if an error occurs.
+This method allows you to store a string value for a given key in the Keychain. The accessibility parameter specifies the level of security required to access the data. The method returns `true` if the operation succeeds, or `false` if an error occurs.
 
 <hr>
 
@@ -16,7 +16,7 @@ This method allows you to store a string value for a given key in the Keychain. 
 ```swift 
 open func getString(_ key: String) -> String?
 ```
-This method allows you to retrieve a string value for a given key from the Keychain. The method returns the string value if it exists, or nil if it does not.
+This method allows you to retrieve a string value for a given key from the Keychain. The method returns the `String` value if it exists, or nil if it does not.
 
 <hr>
 
@@ -78,7 +78,7 @@ This method allows you to retrieve all keys in the Keychain. The method returns 
 In addition to the `KeychainService` class, this library provides a wrapper class called `KeychainWrapper`. The `KeychainWrapper` class provides a simpler interface for storing and retrieving data in the Keychain.
 
 ## Usage 
-To use wrapper, declare a property using the @KeychainWrapper wrapper and specify the type of data to be stored/retrieved, along with a unique key:
+To use wrapper, declare a property using the `@KeychainWrapper` wrapper and specify the type of data to be stored/retrieved, along with a unique key:
 ```swift
 @KeychainWrapper(key: "mySensitiveData")
 var sensitiveData: String?
@@ -89,7 +89,7 @@ sensitiveData = "mySecretPassword"
 print(sensitiveData) // Optional("mySecretPassword")
 ```
 ## Supported Types
-`KeychainWrapper` currently supports storing/retrieving values of the following types:
+`@KeychainWrapper` currently supports storing/retrieving values of the following types:
 * `Bool`
 * `String`
 * `Data`
