@@ -37,6 +37,7 @@ final public class KeychainService {
         
     }
     
+    @discardableResult
     public func setData(_ value: Data, forKey key: String,
                         withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         delete(key)
@@ -54,7 +55,6 @@ final public class KeychainService {
         return resultCodeOfLastOperation == noErr
     }
     
-    
     public func getData(_ key: String) -> Data? {
         var query = query(withKey: key)
         query[kSecReturnData as String] = kCFBooleanTrue
@@ -71,11 +71,13 @@ final public class KeychainService {
         return resultCodeOfLastOperation == noErr ? result as? Data : nil
     }
     
-    public func setBool(_ value: Bool, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+    @discardableResult
+    public func setBool(_ value: Bool, forKey key: String,
+                        withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         let valueData = value ? Data([1]) : Data([0])
         return setData(valueData, forKey: key, withAccessibility: accessibility)
     }
-
+    
     public func getBool(_ key: String) -> Bool? {
         guard let data = getData(key) else { return nil }
         return data.first == 1 ? true : false
