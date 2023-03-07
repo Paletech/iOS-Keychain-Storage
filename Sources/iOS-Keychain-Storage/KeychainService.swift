@@ -16,17 +16,16 @@ final public class KeychainService {
     public var isSynchronizable = false
     
     private let lock = NSLock()
-    
     public init() { }
     
-    //MARK: - Public
     @discardableResult
-    public func set(_ value: String, forKey key: String, withAccess access: CFString? = nil) -> Bool {
-            guard let valueData = value.data(using: .utf8) else { return false }
-            return set(valueData, forKey: key, withAccess: access)
+    public func setString(_ value: String, forKey key: String,
+                          withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+        guard let valueData = value.data(using: .utf8) else { return false }
+        return setData(valueData, forKey: key, withAccessibility: accessibility)
     }
     
-    public func getValue(_ key: String) -> String? {
+    public func getString(_ key: String) -> String? {
         lock.lock()
             defer { lock.unlock() }
             guard let data = getData(key),
@@ -36,6 +35,50 @@ final public class KeychainService {
             }
             return currentString
         
+    }
+    
+    public func setData(_ value: Data, forKey key: String,
+                        withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+        delete(key)
+        
+        let accessible = accessibility.value
+        var query = query(withKey: key)
+        query[kSecValueData as String] = value
+        query[kSecAttrAccessible as String] = accessible
+        addAccessGroupWhenPresent(&query)
+        addSynchronizableIfRequired(&query)
+        
+        queryParametersOfLastOperation = query
+        resultCodeOfLastOperation = SecItemAdd(query as CFDictionary, nil)
+        
+        return resultCodeOfLastOperation == noErr
+    }
+    
+    
+    public func getData(_ key: String) -> Data? {
+        var query = query(withKey: key)
+        query[kSecReturnData as String] = kCFBooleanTrue
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        addAccessGroupWhenPresent(&query)
+        addSynchronizableIfRequired(&query)
+        
+        queryParametersOfLastOperation = query
+        var result: AnyObject?
+        resultCodeOfLastOperation = withUnsafeMutablePointer(to: &result) {
+            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
+        }
+        
+        return resultCodeOfLastOperation == noErr ? result as? Data : nil
+    }
+    
+    public func setBool(_ value: Bool, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+        let valueData = value ? Data([1]) : Data([0])
+        return setData(valueData, forKey: key, withAccessibility: accessibility)
+    }
+
+    public func getBool(_ key: String) -> Bool? {
+        guard let data = getData(key) else { return nil }
+        return data.first == 1 ? true : false
     }
     
     @discardableResult
@@ -70,7 +113,6 @@ final public class KeychainService {
             return resultCodeOfLastOperation == noErr
     }
     
-    //MARK: - Private
     private func query(withKey key: String) -> [String: Any] {
         var query: [String: Any] = [
             kSecClass as String      : kSecClassGenericPassword,
@@ -98,37 +140,5 @@ final public class KeychainService {
         if isSynchronizable {
             query[kSecAttrSynchronizable as String] = kCFBooleanTrue
         }
-    }
-    
-    private func getData(_ key: String) -> Data? {
-        var query = query(withKey: key)
-        query[kSecReturnData as String] = kCFBooleanTrue
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        addAccessGroupWhenPresent(&query)
-        addSynchronizableIfRequired(&query)
-        
-        queryParametersOfLastOperation = query
-        var result: AnyObject?
-        resultCodeOfLastOperation = withUnsafeMutablePointer(to: &result) {
-            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
-        }
-        
-        return resultCodeOfLastOperation == noErr ? result as? Data : nil
-    }
-    
-    private func set(_ value: Data, forKey key: String, withAccess access: CFString? = nil) -> Bool {
-            delete(key)
-            
-            let accessible = access ?? kSecAttrAccessibleWhenUnlocked
-            var query = query(withKey: key)
-            query[kSecValueData as String] = value
-            query[kSecAttrAccessible as String] = accessible
-            addAccessGroupWhenPresent(&query)
-            addSynchronizableIfRequired(&query)
-            
-            queryParametersOfLastOperation = query
-            resultCodeOfLastOperation = SecItemAdd(query as CFDictionary, nil)
-            
-            return resultCodeOfLastOperation == noErr
     }
 }
