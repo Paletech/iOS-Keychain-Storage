@@ -22,7 +22,7 @@ extension KeychainError: LocalizedError {
         case .encodingError(statusCode: let statusCode):
             return NSLocalizedString("Problem occured in encoding task. Code: \(statusCode)", comment: "")
         case .noDataError:
-            return NSLocalizedString("No data found", comment: "")
+            return NSLocalizedString("No data found by provided key", comment: "")
         case .securityError(statusCode: let statusCode):
             return NSLocalizedString("SecurityError: \(statusCode)", comment: "")
         }

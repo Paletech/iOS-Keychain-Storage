@@ -7,8 +7,11 @@ let package = Package(
     name: "Keychain-Storage",
     products: [
         .library(
-            name: "Keychain-Storage",
-            targets: ["Keychain-Storage"]),
+            name: "KeychainStorage",
+            targets: ["KeychainStorage"]),
+        .library(
+            name: "Sample",
+            targets: ["Sample"]),
     ],
     
     dependencies: [
@@ -16,7 +19,10 @@ let package = Package(
     
     targets: [
         .target(
-            name: "Keychain-Storage",
+            name: "KeychainStorage",
             dependencies: []),
+        .target(
+            name: "Sample",
+            dependencies: ["KeychainStorage"]),
     ]
 )
