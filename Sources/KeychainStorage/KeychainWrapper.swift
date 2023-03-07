@@ -10,7 +10,6 @@ import Foundation
 @propertyWrapper
 public struct KeychainWrapper<T> {
     
-    
     private let key: String
     private let keychain = KeychainService()
     
@@ -46,4 +45,3 @@ public struct KeychainWrapper<T> {
         }
     }
 }
-
