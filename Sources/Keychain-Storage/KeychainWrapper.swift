@@ -13,7 +13,7 @@ public struct KeychainWrapper<T> {
     private let key: String
     private let keychain = KeychainService()
     
-    init(key: String) {
+    public init(key: String) {
         self.key = key
     }
     

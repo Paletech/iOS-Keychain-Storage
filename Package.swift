@@ -7,8 +7,8 @@ let package = Package(
     name: "Keychain-Storage",
     products: [
         .library(
-            name: "iOS-Keychain-Storage",
-            targets: ["iOS-Keychain-Storage"]),
+            name: "Keychain-Storage",
+            targets: ["Keychain-Storage"]),
     ],
     
     dependencies: [
@@ -16,7 +16,7 @@ let package = Package(
     
     targets: [
         .target(
-            name: "iOS-Keychain-Storage",
+            name: "Keychain-Storage",
             dependencies: []),
     ]
 )
