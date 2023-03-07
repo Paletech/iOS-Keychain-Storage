@@ -94,5 +94,11 @@ print(sensitiveData) // Optional("mySecretPassword")
 * `String`
 * `Data`
 
-### For more examples checkout [Sample](https://github.com/Paletech/iOS-Keychain-Storage/tree/fix/Sources/Sample) module in a package
+#### For more examples checkout [Sample](https://github.com/Paletech/iOS-Keychain-Storage/tree/fix/Sources/Sample) module in a package
 
+# Error handling
+The `KeychainService` class can throw several different types of errors when performing operations. These errors are all instances of the `KeychainError` enum. The possible error cases are:
+* `encodingError(statusCode: Int)`
+* `decodingError(statusCode: Int)`
+* `securityError(statusCode: OSStatus)`
+* `noDataError`
