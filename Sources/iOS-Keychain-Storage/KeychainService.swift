@@ -15,28 +15,27 @@ final public class KeychainService {
     public var accessGroup: String?
     public var isSynchronizable = false
     
-    private let queue = DispatchQueue(label: "com.keychainservice.serialqueue")
+    private let lock = NSLock()
     
     public init() { }
     
     //MARK: - Public
     @discardableResult
     public func set(_ value: String, forKey key: String, withAccess access: CFString? = nil) -> Bool {
-        return queue.sync {
             guard let valueData = value.data(using: .utf8) else { return false }
             return set(valueData, forKey: key, withAccess: access)
-        }
     }
     
     public func getValue(_ key: String) -> String? {
-        return queue.sync {
+        lock.lock()
+            defer { lock.unlock() }
             guard let data = getData(key),
                   let currentString = String(data: data, encoding: .utf8) else {
                 resultCodeOfLastOperation = -67853
                 return nil
             }
             return currentString
-        }
+        
     }
     
     @discardableResult
@@ -53,7 +52,8 @@ final public class KeychainService {
     
     @discardableResult
     public func clear() -> Bool {
-        return queue.sync {
+        lock.lock()
+            defer { lock.unlock() }
             var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword]
             
             if let accessGroup = accessGroup {
@@ -68,7 +68,6 @@ final public class KeychainService {
             resultCodeOfLastOperation = SecItemDelete(query as CFDictionary)
             
             return resultCodeOfLastOperation == noErr
-        }
     }
     
     //MARK: - Private
