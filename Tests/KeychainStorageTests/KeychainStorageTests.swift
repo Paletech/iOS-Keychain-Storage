@@ -3,30 +3,29 @@ import XCTest
 
 final class KeychainStorageTests: XCTestCase {
     
-    let keychainService = KeychainService()
+    var keychainService: MockKeychainService!
     let key = "key"
     let value = "value"
     
-    func testExample() throws {
-        XCTAssertEqual(KeychainService().text, "Hello, World!")
-    }
-    
     override func setUp() {
         super.setUp()
-        XCTAssertTrue(keychainService.clear(), " ")
+        keychainService = MockKeychainService()
+        XCTAssertTrue(keychainService.clear(), "")
     }
     
     override func tearDown() {
-        XCTAssertTrue(keychainService.clear(), " ")
+        XCTAssertTrue(keychainService.clear(), "")
+        keychainService = nil
         super.tearDown()
     }
     
     func testSet() {
         let checkData = keychainService.setString(value, forKey: key)
-        XCTAssertTrue(checkData, " ")
+        XCTAssertTrue(checkData, "")
     }
     
     func testGet() {
+        XCTAssertTrue(keychainService.setString(value, forKey: key), "")
         XCTAssertEqual(keychainService.getString(key), value, "")
     }
     
@@ -42,11 +41,10 @@ final class KeychainStorageTests: XCTestCase {
         XCTAssertNil(keychainService.getString(key), "")
     }
     
-//    func testAllKeys() {
-//        XCTAssertTrue(keychainService.setString(value, forKey: key), " ")
-//        let keys = keychainService.allKeys()
-//        XCTAssertEqual(keys.count, 1, " ")
-//        XCTAssertEqual(keys[0], key, "\(key)")
-//    }
+    func testAllKeys() {
+        XCTAssertTrue(keychainService.setString(value, forKey: key), " ")
+        let keys = keychainService.allKeys()
+        XCTAssertEqual(keys.count, 1, " ")
+        XCTAssertEqual(keys[0], key, "\(key)")
+    }
 }
-

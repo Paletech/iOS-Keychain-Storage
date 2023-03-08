@@ -15,9 +15,8 @@ open class KeychainService {
     public var accessGroup: String?
     public var isSynchronizable = false
     
-    public var text: String = "Hello, World!" // for tests
-    
     private let lock = NSLock()
+    
     public init() { }
     
     @discardableResult
@@ -69,7 +68,7 @@ open class KeychainService {
             resultCodeOfLastOperation = SecItemAdd(query as CFDictionary, nil)
             
             guard resultCodeOfLastOperation == noErr else {
-                throw KeychainError.securityError(statusCode: resultCodeOfLastOperation)
+                throw KeychainError.securityError(statusCode: KeychainErrorCodes.securityError)
             }
             return true
         } catch {
@@ -115,7 +114,6 @@ open class KeychainService {
         return data.first == 1 ? true : false
     }
     
-    
     @discardableResult
     open func delete(_ key: String) -> Bool {
         var query = query(withKey: key)
@@ -132,7 +130,7 @@ open class KeychainService {
             case errSecItemNotFound:
                 throw KeychainError.noDataToDeleteError
             default:
-                throw KeychainError.securityError(statusCode: resultCodeOfLastOperation)
+                throw KeychainError.securityError(statusCode: KeychainErrorCodes.securityError)
             }
         } catch {
             print(error.localizedDescription)
@@ -144,7 +142,7 @@ open class KeychainService {
     open func clear() -> Bool {
         lock.lock()
         defer { lock.unlock() }
-
+        
         let keys = try? getItems(query: keychainQuery())
             .compactMap { $0[kSecAttrAccount as String] as? String }
         
@@ -161,7 +159,9 @@ open class KeychainService {
         
         return keys ?? []
     }
-    
+}
+
+extension KeychainService {
     private func keychainQuery() -> [String: Any] {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
