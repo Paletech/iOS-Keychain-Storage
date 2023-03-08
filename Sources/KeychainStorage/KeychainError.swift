@@ -11,20 +11,26 @@ public enum KeychainError: Error {
     case decodingError(statusCode: OSStatus)
     case encodingError(statusCode: OSStatus)
     case noDataError
+    case noDataToDeleteError
     case securityError(statusCode: OSStatus)
+    case noKeysData(statusCode: OSStatus)
 }
 
 extension KeychainError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .decodingError:
-            return NSLocalizedString("Problem occured in decoding task", comment: "")
+        case .decodingError(statusCode: let statusCode):
+            return NSLocalizedString("Decoding task failed in the Keychain. Code: \(statusCode)", comment: "")
         case .encodingError(statusCode: let statusCode):
-            return NSLocalizedString("Problem occured in encoding task. Code: \(statusCode)", comment: "")
+            return NSLocalizedString("Encoding task failed in the Keychain. Code: \(statusCode)", comment: "")
         case .noDataError:
-            return NSLocalizedString("No data found by provided key", comment: "")
+            return NSLocalizedString("No data found by provided key in the Keychain", comment: "")
         case .securityError(statusCode: let statusCode):
-            return NSLocalizedString("SecurityError: \(statusCode)", comment: "")
+            return NSLocalizedString("SecurityError in the Keychain \(statusCode)", comment: "")
+        case .noKeysData(statusCode: let statusCode):
+            return NSLocalizedString("Error retrieving all keys from Keychain: \(statusCode)", comment: "")
+        case .noDataToDeleteError:
+            return NSLocalizedString("No data to delete by this provided key", comment: "")
         }
     }
 }

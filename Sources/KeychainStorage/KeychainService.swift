@@ -19,7 +19,8 @@ open class KeychainService {
     public init() { }
     
     @discardableResult
-    open func setString(_ value: String, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+    open func setString(_ value: String, forKey key: String,
+                        withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         do {
             guard let valueData = value.data(using: .utf8) else {
                 throw KeychainError.encodingError(statusCode: -1)
@@ -91,7 +92,7 @@ open class KeychainService {
         
         do {
             guard resultCodeOfLastOperation == noErr else {
-                throw KeychainError.securityError(statusCode: resultCodeOfLastOperation)
+                throw KeychainError.noDataError
             }
             return result as? Data
         } catch {
@@ -101,7 +102,8 @@ open class KeychainService {
     }
     
     @discardableResult
-    open func setBool(_ value: Bool, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+    open func setBool(_ value: Bool, forKey key: String,
+                      withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         let valueData = value ? Data([1]) : Data([0])
         return setData(valueData, forKey: key, withAccessibility: accessibility)
     }
@@ -127,11 +129,12 @@ open class KeychainService {
             case noErr:
                 return true
             case errSecItemNotFound:
-                throw KeychainError.noDataError
+                throw KeychainError.noDataToDeleteError
             default:
                 throw KeychainError.securityError(statusCode: resultCodeOfLastOperation)
             }
         } catch {
+            print(error.localizedDescription)
             return false
         }
     }
@@ -174,7 +177,7 @@ open class KeychainService {
             }
             
             guard resultCodeOfLastOperation == noErr else {
-                throw KeychainError.securityError(statusCode: resultCodeOfLastOperation)
+                throw KeychainError.noKeysData(statusCode: resultCodeOfLastOperation)
             }
             
             if let items = result as? [[String: Any]] {
@@ -185,7 +188,7 @@ open class KeychainService {
                 }
             }
         } catch {
-            print("Error retrieving all keys from Keychain: \(error)")
+            print(error.localizedDescription)
         }
         
         return keys
