@@ -34,3 +34,9 @@ extension KeychainError: LocalizedError {
         }
     }
 }
+
+struct KeychainErrorCodes {
+    static let encodingError: OSStatus = -1
+    static let decodingError: OSStatus = -67853
+    static let noKeysData: OSStatus = -25307
+}

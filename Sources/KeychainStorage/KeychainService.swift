@@ -40,7 +40,7 @@ open class KeychainService {
         do {
             guard let data = getData(key) else { return nil }
             guard let currentString = String(data: data, encoding: .utf8) else {
-                let error = KeychainError.decodingError(statusCode: -67853)
+                let error = KeychainError.decodingError(statusCode: KeychainErrorCodes.decodingError)
                 throw error
             }
             return currentString
@@ -177,7 +177,7 @@ open class KeychainService {
             }
             
             guard resultCodeOfLastOperation == noErr else {
-                throw KeychainError.noKeysData(statusCode: resultCodeOfLastOperation)
+                throw KeychainError.noKeysData(statusCode: KeychainErrorCodes.noKeysData)
             }
             
             if let items = result as? [[String: Any]] {
