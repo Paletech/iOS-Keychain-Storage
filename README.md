@@ -98,9 +98,9 @@ print(sensitiveData) // Optional("mySecretPassword")
 
 # Error handling
 The `KeychainService` class can throw several different types of errors when performing operations. These errors are all instances of the `KeychainError` enum. The possible error cases are:
-* `encodingError` - 
+* `encodingError` - Encoding task failed in the Keychain. Code: -1
 * `decodingError` - Decoding task failed in the Keychain. Code: -67853
-* `securityError` - Encoding task failed in the Keychain. Code: -1
+* `securityError` - SecurityError in the Keychain. Check your entitlements. Code: -34018
 * `noDataError` - No data found by provided key in the Keychain
 * `noDataToDeleteError` - No data to delete by this provided key
-* `noKeysData` - Error retrieving all keys from Keychain. Keychain is empty
+* `noKeysData` - Error retrieving all keys from Keychain. Keychain is empty 
