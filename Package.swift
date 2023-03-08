@@ -21,6 +21,8 @@ let package = Package(
         .target(
             name: "KeychainStorage",
             dependencies: []),
+        .testTarget(name: "KeychainStorageTests",
+                    dependencies: ["KeychainStorage"]),
         .target(
             name: "Sample",
             dependencies: ["KeychainStorage"]),

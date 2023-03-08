@@ -15,6 +15,8 @@ open class KeychainService {
     public var accessGroup: String?
     public var isSynchronizable = false
     
+    public var text: String = "Hello, World!" // for tests
+    
     private let lock = NSLock()
     public init() { }
     
@@ -71,7 +73,6 @@ open class KeychainService {
             }
             return true
         } catch {
-            print(error.localizedDescription)
             return false
         }
     }
@@ -143,23 +144,25 @@ open class KeychainService {
     open func clear() -> Bool {
         lock.lock()
         defer { lock.unlock() }
-        var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword]
+
+        let keys = try? getItems(query: keychainQuery())
+            .compactMap { $0[kSecAttrAccount as String] as? String }
         
-        if let accessGroup = accessGroup {
-            query[kSecAttrAccessGroup as String] = accessGroup
+        for key in keys ?? [] {
+            delete(key)
         }
         
-        if isSynchronizable {
-            query[kSecAttrSynchronizable as String] = kCFBooleanTrue
-        }
-        
-        queryParametersOfLastOperation = query
-        resultCodeOfLastOperation = SecItemDelete(query as CFDictionary)
-        
-        return resultCodeOfLastOperation == noErr
+        return keys?.isEmpty ?? true
     }
     
     open func allKeys() -> [String] {
+        let keys = try? getItems(query: keychainQuery())
+            .compactMap { $0[kSecAttrAccount as String] as? String }
+        
+        return keys ?? []
+    }
+    
+    private func keychainQuery() -> [String: Any] {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecReturnAttributes as String: kCFBooleanTrue!,
@@ -169,29 +172,25 @@ open class KeychainService {
         addAccessGroupWhenPresent(&query)
         addSynchronizableIfRequired(&query)
         
+        return query
+    }
+    
+    private func getItems(query: [String: Any]) throws -> [[String: Any]] {
         var result: AnyObject?
-        var keys = [String]()
-        do {
-            resultCodeOfLastOperation = withUnsafeMutablePointer(to: &result) {
-                SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
-            }
-            
-            guard resultCodeOfLastOperation == noErr else {
-                throw KeychainError.noKeysData(statusCode: KeychainErrorCodes.noKeysData)
-            }
-            
-            if let items = result as? [[String: Any]] {
-                for item in items {
-                    if let key = item[kSecAttrAccount as String] as? String {
-                        keys.append(key)
-                    }
-                }
-            }
-        } catch {
-            print(error.localizedDescription)
+        
+        resultCodeOfLastOperation = withUnsafeMutablePointer(to: &result) {
+            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
         }
         
-        return keys
+        guard resultCodeOfLastOperation == noErr else {
+            throw KeychainError.noKeysData(statusCode: KeychainErrorCodes.noKeysData)
+        }
+        
+        guard let items = result as? [[String: Any]] else {
+            throw KeychainError.noDataError
+        }
+        
+        return items
     }
     
     private func query(withKey key: String) -> [String: Any] {

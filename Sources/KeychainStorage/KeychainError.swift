@@ -28,7 +28,7 @@ extension KeychainError: LocalizedError {
         case .securityError(statusCode: let statusCode):
             return NSLocalizedString("SecurityError in the Keychain \(statusCode)", comment: "")
         case .noKeysData(statusCode: let statusCode):
-            return NSLocalizedString("Error retrieving all keys from Keychain: \(statusCode)", comment: "")
+            return NSLocalizedString("Error retrieving all keys from Keychain. Keychain is empty: \(statusCode)", comment: "")
         case .noDataToDeleteError:
             return NSLocalizedString("No data to delete by this provided key", comment: "")
         }
