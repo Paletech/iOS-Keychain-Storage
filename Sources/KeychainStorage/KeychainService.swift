@@ -23,7 +23,7 @@ open class KeychainService {
                         withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         do {
             guard let valueData = value.data(using: .utf8) else {
-                throw KeychainError.encodingError(statusCode: -1)
+                throw KeychainError.encodingError(statusCode: KeychainErrorCodes.encodingError)
             }
             return setData(valueData, forKey: key, withAccessibility: accessibility)
         } catch {
