@@ -4,19 +4,30 @@
 import PackageDescription
 
 let package = Package(
-    name: "KeychainRoll",
+    name: "Keychain-Storage",
+    platforms: [
+        .iOS(.v14)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "iOS-Keychain-Storage",
-            targets: ["iOS-Keychain-Storage"]),
+            name: "KeychainStorage",
+            targets: ["KeychainStorage"]),
+        .library(
+            name: "Sample",
+            targets: ["Sample"]),
     ],
+    
     dependencies: [
-
     ],
+    
     targets: [
         .target(
-            name: "iOS-Keychain-Storage",
+            name: "KeychainStorage",
             dependencies: []),
+        .testTarget(name: "KeychainStorageTests",
+                    dependencies: ["KeychainStorage"]),
+        .target(
+            name: "Sample",
+            dependencies: ["KeychainStorage"]),
     ]
 )
