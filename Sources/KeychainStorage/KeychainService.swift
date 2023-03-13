@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 import Security
 
 open class KeychainService {
@@ -28,7 +29,7 @@ open class KeychainService {
             }
             return setData(valueData, forKey: key, withAccessibility: accessibility)
         } catch {
-            print(error.localizedDescription)
+            os_log("%s", error.localizedDescription)
             return false
         }
     }
@@ -46,7 +47,7 @@ open class KeychainService {
             }
             return currentString
         } catch {
-            print(error.localizedDescription)
+            os_log("%s", error.localizedDescription)
             return nil
         }
     }
@@ -96,7 +97,7 @@ open class KeychainService {
             }
             return result as? Data
         } catch {
-            print(error.localizedDescription)
+            os_log("%s", error.localizedDescription)
             return nil
         }
     }
@@ -133,7 +134,7 @@ open class KeychainService {
                 throw KeychainError.securityError(statusCode: KeychainErrorCodes.securityError)
             }
         } catch {
-            print(error.localizedDescription)
+            os_log("%s", error.localizedDescription)
             return false
         }
     }
@@ -150,14 +151,17 @@ open class KeychainService {
             delete(key)
         }
         
-        return keys?.isEmpty ?? true
+        return keys?.isEmpty == true
     }
     
     open func allKeys() -> [String] {
-        let keys = try? getItems(query: keychainQuery())
-            .compactMap { $0[kSecAttrAccount as String] as? String }
-        
-        return keys ?? []
+        var keys: [String] = []
+        try? getItems(query: keychainQuery()).forEach { item in
+            if let key = item[kSecAttrAccount as String] as? String {
+                keys.append(key)
+            }
+        }
+        return keys
     }
 }
 

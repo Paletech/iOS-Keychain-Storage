@@ -12,7 +12,8 @@ class MockKeychainService: KeychainService {
     
     var storedData: [String: Data] = [:]
     
-    override func setString(_ value: String, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+    override func setString(_ value: String, forKey key: String,
+                            withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         if let data = value.data(using: .utf8) {
             storedData[key] = data
             return true
@@ -25,7 +26,8 @@ class MockKeychainService: KeychainService {
         return storedData[key].flatMap { String(data: $0, encoding: .utf8) }
     }
     
-    override func setData(_ value: Data, forKey key: String, withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
+    override func setData(_ value: Data, forKey key: String,
+                          withAccessibility accessibility: Accessibility = .whenUnlocked) -> Bool {
         storedData[key] = value
         return true
     }
