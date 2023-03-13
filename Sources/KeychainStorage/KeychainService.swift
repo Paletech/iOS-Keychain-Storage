@@ -73,6 +73,7 @@ open class KeychainService {
             }
             return true
         } catch {
+            os_log("%s", error.localizedDescription)
             return false
         }
     }
@@ -161,6 +162,7 @@ open class KeychainService {
                 keys.append(key)
             }
         }
+        
         return keys
     }
 }
