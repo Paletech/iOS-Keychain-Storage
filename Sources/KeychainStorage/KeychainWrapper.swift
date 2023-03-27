@@ -33,12 +33,24 @@ public struct KeychainWrapper<T> {
         }
         set {
             switch newValue {
-            case let newValue as String:
-              keychain.setString(newValue, forKey: key)
-            case let newValue as Bool:
-                keychain.setBool(newValue, forKey: key)
-            case let newValue as Data:
-                keychain.setData(newValue, forKey: key)
+            case let newValue as String?:
+                if let value = newValue {
+                    keychain.setString(value, forKey: key)
+                } else {
+                    keychain.delete(key)
+                }
+            case let newValue as Bool?:
+                if let value = newValue {
+                    keychain.setBool(value, forKey: key)
+                } else {
+                    keychain.delete(key)
+                }
+            case let newValue as Data?:
+                if let value = newValue {
+                    keychain.setData(value, forKey: key)
+                } else {
+                    keychain.delete(key)
+                }
             default:
                 fatalError("Unsupported type")
             }
